@@ -1,0 +1,11 @@
+.workers/
+.claude/
+CONTRACT.md
+__wl*
+__pycache__/
+src/chapters/*-b.js
+src/lib/*-b/
+src/lib/sec-test.html
+src/site/site-test.html
+vendor/three/build/three.webgpu*
+vendor/three/build/three.tsl*

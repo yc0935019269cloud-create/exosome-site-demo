@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XX公司｜外泌體萃取與 B2B 合作（提案概念）</title>
+<meta name="description" content="從間質幹細胞到純化外泌體：一趟 100 奈米尺度的旅程。提案概念展示。">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/base.css">
+<link rel="stylesheet" href="src/ui/ui.css">
+<link rel="stylesheet" href="src/site/site.css">
+<script>
+// 展示站預設完整動態，不跟隨系統的「減少動態」（Windows 關閉動畫效果時會變成一格一格）；網址加 ?motion=reduce 可還原
+if (!/[?&]motion=reduce/.test(location.search)) {
+  const mm = window.matchMedia.bind(window);
+  window.matchMedia = q => mm(/prefers-reduced-motion\s*:\s*reduce/.test(q) ? 'not all' : q);
+} else {
+  // ?motion=reduce：強制減少動態（CSS 以 html.motion-reduce 判斷，JS 的 matchMedia 一律回報成立）
+  document.documentElement.classList.add('motion-reduce');
+  const mm = window.matchMedia.bind(window);
+  window.matchMedia = q => mm(/prefers-reduced-motion\s*:\s*reduce/.test(q) ? 'all' : q);
+}
+</script>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="scroll" aria-hidden="true"></div>
+<div id="ui"></div>
+<main id="site" class="site"></main>
+<div id="loader"><div class="ld"><i id="ld-fill"></i></div></div>
+<noscript>此展示需要 JavaScript 與 WebGL2。</noscript>
+<script type="module" src="src/smooth-scroll.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

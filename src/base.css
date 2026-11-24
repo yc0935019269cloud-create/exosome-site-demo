@@ -1,0 +1,22 @@
+:root{
+  --theme:0; /* 0 暗場 → 1 亮場，由 ui.js 每幀寫入 */
+  --paper:#0b0f14; --amber:#f2b84b; --jade:#3fc7b0; --peri:#9b8cff; --coral:#ff7a59;
+  --gutter:clamp(16px,4vw,64px);
+  --font:"Schibsted Grotesk","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:#07090c;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{font-family:var(--font);color:#eef0ec;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;height:100lvh;display:block;touch-action:pan-y}
+#scroll{height:1300vh}
+#ui{position:fixed;inset:0;pointer-events:none;z-index:2}
+#loader{position:fixed;inset:0;background:#07090c;z-index:9;display:grid;place-items:center;transition:opacity 1.1s ease,visibility 1.1s}
+#loader.done{opacity:0;visibility:hidden}
+.ld{width:132px;height:132px;border-radius:50%;border:1px solid rgba(238,240,236,.16);position:relative;overflow:hidden}
+.ld i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,#b9e6dc 22%,#9b8cff 55%,#ff7a59 85%);transform:scale(var(--k,.02));transition:transform .5s ease;opacity:.9}
+#site{position:relative;z-index:3;background:#eef0ec}
+#ui{transition:opacity .35s}
+body.in-site #ui{opacity:0;visibility:hidden}
+/* 沒有英文名時，分隔線一起收掉 */
+.site-nav__sep:has(+ .site-nav__en:empty), .site-nav__en:empty{display:none}

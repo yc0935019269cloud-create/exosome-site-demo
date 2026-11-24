@@ -1,0 +1,847 @@
+/* 全站介面：科學儀器 × 美術館標牌，細線、精準、零玻璃擬態、零陰影卡片（導覽列由 src/site/ 負責，保留頂部 72px 安全區） */
+
+:root {
+  --fg-rgb: 238, 240, 236;
+  --inv-rgb: 11, 15, 20;
+  --fg: rgb(var(--fg-rgb));
+  --fg-sub: rgba(var(--fg-rgb), 0.72);
+  --fg-mut: rgba(var(--fg-rgb), 0.56);
+  --line: rgba(var(--fg-rgb), 0.18);
+  --line-str: rgba(var(--fg-rgb), 0.44);
+  --use-accent: #639e92;
+  --nav-safe: 72px;
+}
+
+#ui {
+  font-family: var(--font);
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── 場景標題（避開頂部 72px 固定導覽列；暗場上下極淡漸暗，無框無卡片） ─── */
+.ui-scenes {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ui-scenes::before,
+.ui-scenes::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  opacity: calc(1 - var(--theme, 0));
+  will-change: opacity;
+}
+
+.ui-scenes::before {
+  top: 0;
+  height: clamp(96px, 16vh, 160px);
+  background: linear-gradient(
+    to bottom,
+    rgba(7, 9, 12, 0.72) 0%,
+    rgba(7, 9, 12, 0.36) 52%,
+    rgba(7, 9, 12, 0) 100%
+  );
+}
+
+.ui-scenes::after {
+  bottom: 0;
+  height: clamp(190px, 32vh, 320px);
+  background: linear-gradient(
+    to top,
+    rgba(7, 9, 12, 0.78) 0%,
+    rgba(7, 9, 12, 0.42) 48%,
+    rgba(7, 9, 12, 0) 100%
+  );
+}
+
+.ui-scene {
+  position: absolute;
+  z-index: 1;
+  left: var(--gutter);
+  bottom: clamp(34px, 6.8vh, 76px);
+  max-width: min(560px, 56vw);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.ui-scene--hero {
+  top: max(calc(var(--nav-safe) + 32px), 58%);
+  bottom: auto;
+  max-width: min(760px, 84vw);
+}
+
+.ui-scene-title {
+  margin: 0;
+  font-weight: 500;
+  color: var(--fg);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  word-break: keep-all;
+  text-shadow:
+    0 1px 4px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.84)),
+    0 2px 18px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.78));
+}
+
+.ui-scene--hero .ui-scene-title {
+  font-size: clamp(44px, 6.8vw, 104px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+}
+
+.ui-clause {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ui-scene--hero .ui-clause {
+  display: block;
+}
+
+.ui-ch-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.ui-ch {
+  display: inline-block;
+  will-change: transform;
+}
+
+.ui-scene-sub {
+  margin-top: 12px;
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 400;
+  line-height: 1.58;
+  letter-spacing: 0.015em;
+  color: rgba(var(--fg-rgb), 0.84);
+  max-width: 38ch;
+  will-change: transform, opacity;
+  text-shadow:
+    0 1px 3px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.88)),
+    0 2px 14px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.82));
+}
+
+.ui-scene--hero .ui-scene-sub {
+  margin-top: clamp(14px, 2vh, 22px);
+  font-size: clamp(14px, 1.25vw, 18px);
+}
+
+/* Hero 捲動提示 */
+.ui-scroll-hint {
+  margin-top: clamp(24px, 4.2vh, 46px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-mut);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  will-change: opacity, transform;
+}
+
+.ui-scroll-bar {
+  position: relative;
+  width: 1px;
+  height: 26px;
+  background: var(--line);
+  overflow: hidden;
+  display: block;
+}
+
+.ui-scroll-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 10px;
+  background: var(--fg);
+  animation: uiScrollDrop 2.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes uiScrollDrop {
+  0% { transform: translateY(-100%); opacity: 0; }
+  25% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(280%); opacity: 0; }
+}
+
+.ui-reduced .ui-scroll-bar::after {
+  animation: none;
+  transform: translateY(8px);
+  opacity: 0.7;
+}
+
+/* ─── 3D 標註引線與文字 ─── */
+.ui-labels {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  overflow: hidden;
+}
+
+.ui-lbl-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ui-lbl-line {
+  fill: none;
+  stroke: rgba(var(--fg-rgb), 0.68);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.ui-lbl-dot {
+  fill: var(--fg);
+}
+
+.ui-lbl-dot[data-code="cd9"]  { fill: var(--amber); }
+.ui-lbl-dot[data-code="cd63"] { fill: var(--jade); }
+.ui-lbl-dot[data-code="cd81"] { fill: var(--peri); }
+.ui-lbl-dot[data-code="rna"]  { fill: var(--coral); }
+
+.ui-lbl-ring {
+  fill: none;
+  stroke: rgba(var(--fg-rgb), 0.3);
+  stroke-width: 1;
+}
+
+.ui-lbl-ring[data-code="cd9"]  { stroke: rgba(242, 184, 75, 0.55); }
+.ui-lbl-ring[data-code="cd63"] { stroke: rgba(63, 199, 176, 0.55); }
+.ui-lbl-ring[data-code="cd81"] { stroke: rgba(155, 140, 255, 0.55); }
+.ui-lbl-ring[data-code="rna"]  { stroke: rgba(255, 122, 89, 0.55); }
+
+.ui-lbl-txt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.ui-lbl-txt[data-side="left"] {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.ui-lbl-main {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  text-shadow:
+    0 0 3px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.96)),
+    0 1px 6px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.92)),
+    0 2px 14px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.84));
+}
+
+.ui-lbl-sub {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.28;
+  letter-spacing: 0.02em;
+  color: rgba(var(--fg-rgb), 0.88);
+  text-shadow:
+    0 0 3px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.96)),
+    0 1px 6px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.92)),
+    0 2px 12px rgba(7, 9, 12, calc((1 - var(--theme, 0)) * 0.84));
+}
+
+/* ─── 右側進度線（桌機）＋ 底部細線（手機） ─── */
+.ui-rail {
+  position: fixed;
+  right: clamp(16px, 2.4vw, 34px);
+  top: calc(50% + 18px);
+  transform: translateY(-50%);
+  height: 30vh;
+  min-height: 180px;
+  max-height: 290px;
+  width: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.ui-rail-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--line);
+}
+
+.ui-rail-seg {
+  pointer-events: auto;
+  position: relative;
+  width: 24px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-rail-seg::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.ui-rail-seg:hover::before,
+.ui-rail-seg[aria-current="step"]::before {
+  background: var(--line-str);
+}
+
+.ui-rail-seg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5px;
+  height: 1px;
+  transform: translateX(-50%);
+  background: var(--line);
+}
+
+.ui-rail-seg:first-of-type::after {
+  display: none;
+}
+
+.ui-rail-seg:focus-visible {
+  outline: 1.5px solid var(--fg);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.ui-rail-pearl {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--fg);
+  box-shadow: 0 0 0 2px rgba(var(--inv-rgb), 0.35);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ui-mobile-bar {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--line);
+  z-index: 22;
+  pointer-events: none;
+}
+
+.ui-mobile-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--fg);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+/* ─── 組規格器（vial p >= 0.45，桌機左欄寬約 460px、於 72px 導覽列下方垂直置中） ─── */
+.cfg-panel {
+  position: fixed;
+  left: var(--gutter);
+  top: calc(50% + 36px);
+  width: min(460px, 44vw);
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  overflow-x: visible;
+  z-index: 18;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+  user-select: text;
+  scrollbar-width: none;
+}
+
+.cfg-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.cfg-panel.is-open {
+  pointer-events: auto;
+}
+
+.cfg-title {
+  margin: 0 0 clamp(22px, 3vh, 32px) 0;
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.cfg-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.5vh, 26px);
+}
+
+.cfg-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.cfg-legend {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--fg-mut);
+  margin-bottom: 10px;
+}
+
+.cfg-row {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 24px;
+  row-gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cfg-row--multi {
+  column-gap: 20px;
+  row-gap: 12px;
+}
+
+.cfg-opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 0;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1.3;
+  color: var(--fg-mut);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.cfg-opt:hover {
+  color: var(--fg);
+}
+
+.cfg-opt.is-checked {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.cfg-opt.is-focused,
+.cfg-opt:has(input:focus-visible) {
+  outline: 1.5px solid var(--fg);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* 單選滑動底線與小圓點 */
+.cfg-slider-line {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 1px;
+  height: 1.5px;
+  background: var(--fg);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.cfg-slider-dot {
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--fg);
+  pointer-events: none;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.28s ease;
+  will-change: transform;
+}
+
+.cfg-group[data-key="use"] .cfg-slider-dot {
+  background: var(--use-accent);
+}
+
+.ui-reduced .cfg-slider-line,
+.ui-reduced .cfg-slider-dot {
+  transition: none;
+}
+
+/* 複選（隨附檢測）細緻圓點與底線 */
+.cfg-chk-dot {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  border: 1px solid var(--line-str);
+  background: transparent;
+  flex-shrink: 0;
+  transition: background-color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+}
+
+.cfg-opt--multi.is-checked .cfg-chk-dot {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.cfg-opt--multi::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--fg);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cfg-opt--multi.is-checked::after {
+  transform: scaleX(1);
+}
+
+.ui-reduced .cfg-opt--multi::after {
+  transition: none;
+}
+
+/* 規格碼列 */
+.cfg-code-row {
+  margin-top: clamp(20px, 2.8vh, 28px);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cfg-code-left {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.cfg-code-label {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--fg-mut);
+}
+
+.cfg-code-value {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font);
+  font-size: clamp(22px, 2vw, 27px);
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+.cfg-slot {
+  display: inline-block;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.cfg-slot-track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.cfg-slot-ch {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15em;
+  text-align: center;
+}
+
+.cfg-code-qc {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--fg-sub);
+  white-space: nowrap;
+}
+
+/* 操作按鈕 */
+.cfg-actions {
+  margin-top: clamp(18px, 2.5vh, 24px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cfg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 22px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.cfg-btn:focus-visible {
+  outline: 1.5px solid var(--fg);
+  outline-offset: 4px;
+}
+
+.cfg-btn--primary {
+  background: var(--fg);
+  color: rgb(var(--inv-rgb));
+  border: 1px solid var(--fg);
+}
+
+.cfg-btn--primary:hover {
+  opacity: 0.86;
+}
+
+.cfg-btn--secondary {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line-str);
+  font-weight: 400;
+}
+
+.cfg-btn--secondary:hover {
+  border-color: var(--fg);
+}
+
+/* Clipboard 不可用時的純文字回退選取區 */
+.cfg-fallback {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 78px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--fg);
+  background: rgba(var(--fg-rgb), 0.04);
+  border: 1px solid var(--line-str);
+  border-radius: 2px;
+  resize: none;
+  display: none;
+}
+
+.cfg-fallback.is-visible {
+  display: block;
+}
+
+.cfg-notice {
+  margin-top: clamp(14px, 2vh, 20px);
+  font-size: 12px;
+  line-height: 1.58;
+  letter-spacing: 0.015em;
+  color: var(--fg-mut);
+}
+
+/* ─── 手機與直式螢幕 RWD ─── */
+@media (max-width: 860px), (max-aspect-ratio: 95/100) {
+  .ui-rail {
+    display: none;
+  }
+
+  .ui-mobile-bar {
+    display: block;
+  }
+
+  .ui-scene {
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(22px, 4.8vh, 42px);
+    max-width: none;
+  }
+
+  .ui-scene--hero {
+    top: auto;
+    bottom: clamp(44px, 10vh, 96px);
+  }
+
+  .ui-scene-title {
+    font-size: clamp(24px, 6.4vw, 34px);
+  }
+
+  .ui-scene--hero .ui-scene-title {
+    font-size: clamp(40px, 11vw, 56px);
+  }
+
+  .ui-scene-sub {
+    margin-top: 8px;
+    font-size: 13px;
+  }
+
+  .ui-scroll-hint {
+    margin-top: 20px;
+  }
+
+  .ui-lbl-main {
+    font-size: 14px;
+  }
+
+  .ui-lbl-sub {
+    font-size: 12px;
+  }
+
+  /* 手機版組規格器：底部可用區，不溢出不橫捲、與上方縮小上移的瓶底保持清楚間距 */
+  .cfg-panel {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 54svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px var(--gutter) max(10px, env(safe-area-inset-bottom));
+    background: linear-gradient(
+      to top,
+      rgba(238, 240, 236, 0.96) 84%,
+      rgba(238, 240, 236, 0) 100%
+    );
+  }
+
+  .cfg-title {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .cfg-form {
+    gap: 7px;
+  }
+
+  .cfg-legend {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .cfg-row {
+    column-gap: 16px;
+    row-gap: 5px;
+    padding-bottom: 5px;
+  }
+
+  .cfg-row--multi {
+    column-gap: 14px;
+    row-gap: 5px;
+  }
+
+  .cfg-opt {
+    font-size: 14.5px;
+    padding: 1px 0;
+  }
+
+  .cfg-code-row {
+    margin-top: 8px;
+    padding: 6px 0;
+  }
+
+  .cfg-code-label {
+    font-size: 12px;
+  }
+
+  .cfg-code-value {
+    font-size: 19px;
+  }
+
+  .cfg-code-qc {
+    font-size: 11.5px;
+  }
+
+  .cfg-actions {
+    margin-top: 8px;
+    gap: 10px;
+  }
+
+  .cfg-btn {
+    padding: 8px 16px;
+    font-size: 13.5px;
+  }
+
+  .cfg-notice {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.42;
+  }
+}
